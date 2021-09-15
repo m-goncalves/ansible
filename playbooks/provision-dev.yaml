@@ -1,0 +1,26 @@
+- name: MIGRATION DEV II > GBLIX
+  hosts: ubuntu
+  vars:
+    brt_project: 
+    brt_db: 
+    brt_db_usr: 
+    brt_db_pwd: 
+  tasks:
+    - include_role:
+        name: 
+  
+- name: DEPLOY GBLIX
+  hosts: gblix
+  vars:  
+    brt_project: 
+    gblix_usr: 
+    gblix_pwd: 
+    gblix_db_usr:  
+    gblix_db_pwd: 
+    gitdir: 
+    gblix_project: 
+   
+  tasks:
+    - include_role:
+        name: deploy-dev
+        
