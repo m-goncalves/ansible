@@ -1,0 +1,188 @@
+---
+# MIGRATING DEVELOPMENT ENVIRONMENTS - BERTHOLDO DEV2
+
+- name: SETTING UP GIT GLOBAL CONFIGURATION - E-MAIL
+  ansible.builtin.shell:
+    cmd: git config --global user.email "webmaster@bertholdo.com.br"
+    #chdir: /home/{{ gblix_usr }}
+
+- name: SETTING UP GIT GLOBAL CONFIGURATION - USERNAME
+  ansible.builtin.shell:
+    cmd: git config --global user.name "Bertholdo"
+    #chdir: /home/{{gblix_usr }}
+
+- name: CHECKING IF KEY FILES EXIST
+  stat:
+    path: /home/{{ gblix_usr }}/keys
+  register: stat_result
+    
+- name: COPYING PERMISSION FILES
+  ansible.builtin.copy:
+    src: /root/roles/deploy-dev/files/keys
+    dest: /home/{{ gblix_usr }}
+  when: not stat_result.stat.exists
+
+- name: ADDING PUBLIC KEYS
+  ansible.builtin.shell:
+    cmd: cat /home/{{ gblix_usr }}/keys > /home/{{ gblix_usr }}/.ssh/authorized_keys
+    chdir: /home/{{ gblix_usr }}
+
+- name: REMOVING KEYS FILE
+  ansible.builtin.file:
+    path: /home/{{ gblix_usr }}/keys
+    state: absent
+
+- name: CHECKING IF .HTACCES EXISTS
+  stat:
+    path: /home/{{ gblix_usr }}/public_html
+  register: stat_result
+
+- name: COPYING .HTACCESS
+  ansible.builtin.copy:
+    src: /root/roles/deploy-dev/files/.htaccess
+    dest: /home/{{ gblix_usr }}/public_html
+    owner: "{{ gblix_usr }}" 
+    group: "{{ gblix_usr }}"
+    mode: '0644'
+  when: not stat_result.stat.exists
+
+- name: CHECKING IF FILES WERE ALREADY EXTRACTED
+  stat:
+    path: /home/{{ gblix_usr }}/{{ brt_project }}
+  register: stat_result
+ 
+- name: EXTRACTING FILES
+  ansible.builtin.unarchive:
+    src: http://dev2.brtloja.com.br/{{ brt_project }}/{{ brt_project }}.tar.gz
+    dest: /home/{{ gblix_usr }}
+    remote_src: yes
+  when: not stat_result.stat.exists
+
+    #- name: FETCHING TARBALL
+    #ansible.builtin.shell:
+    #cmd: wget http://dev2.brtloja.com.br/{{ brt_project }}/{{ brt_project }}.tar.gz
+    #chdir: /home/{{ gblix_usr }}
+
+    #url: http://dev2.brtloja.com.br/{{ brt_project }}/{{ brt_project }}.tar.gz
+    #dest: /home/{{ gblix_usr }}
+
+    #- name: EXTRACTING FILES
+    #ansible.builtin.unarchive:
+    #src: /home/{{ gblix_usr }}/{{ brt_project }}.tar.gz
+    #dest: /home/{{ gblix_usr }}
+    #remote_src: yes
+    
+- name: MOVING FILES TO PUBLIC_HTML
+  ansible.builtin.shell:
+    cmd: mv /home/{{ gblix_usr }}/{{ brt_project }}/* /home/{{ gblix_usr }}/public_html
+
+- name: REPLACING DATABASE USERNAME
+  ansible.builtin.replace:
+    path: /home/{{ gblix_usr }}/public_html/wp-config.php
+    regexp: "define\\( 'DB_USER', '.*' \\);"
+    replace: "define( 'DB_USER', '{{ gblix_db_usr }}' );"
+ 
+- name: REPLACING DATABASE PASSWORD
+  ansible.builtin.replace:
+    path: /home/{{ gblix_usr }}/public_html/wp-config.php
+    regexp: "define\\( 'DB_PASSWORD', '.*' \\);"
+    replace: "define( 'DB_PASSWORD', '{{ gblix_db_pwd }}' );"
+
+- name: REPLACING DATABASE NAME
+  ansible.builtin.replace:
+    path: /home/{{ gblix_usr }}/public_html/wp-config.php
+    regexp: "define\\( 'DB_NAME', '.*' \\);"
+    replace: "define( 'DB_NAME', '{{ gblix_db_usr }}' );"
+
+
+- name: REMOVING OLD DIRECTORY
+  ansible.builtin.file:
+    path: /home/{{ gblix_usr }}/{{ brt_project }}
+    state: absent
+
+- name: RESTORING DATABASE
+  ansible.builtin.shell:
+    cmd: mysql -u{{ gblix_db_usr }} -p{{ gblix_db_pwd }} {{ gblix_db_usr }} < {{ brt_project }}.sql
+    chdir: /home/{{ gblix_usr }}/public_html
+
+- name: CHECKING IF BERTHOLDO DIR EXISTS
+  stat:
+    path: /home/{{ gblix_usr }}/devbertholdo
+  register: stat_result
+
+- name: CREATING DEVBERTHOLDO DIRECTORY
+  ansible.builtin.file:
+    path: /home/{{ gblix_usr }}/devbertholdo
+    state: directory
+    # mode: '0755'
+  when: not stat_result.stat.exists
+
+- name: CHECKING IF GIT DIR EXISTS
+  stat:
+    path: /home/{{ gblix_usr }}/devbertholdo/{{ gitdir }}.git
+  register: stat_result
+
+- name: INITIALIZING GIT REPOSITORY
+  ansible.builtin.shell:
+   cmd: git init /home/{{ gblix_usr }}/devbertholdo/{{ gitdir }}.git --bare
+  when: not stat_result.stat.exists
+
+- name: CHECKING IF POST-RECEIVE EXISTS
+  stat:
+    path: /home/{{ gblix_usr }}/devbertholdo/{{ gitdir }}.git/hooks/post-receive
+  register: stat_result
+
+- name: ADDING POST-RECEIVE
+  ansible.builtin.template:
+    src: /root/roles/deploy-dev/templates/post-receive.j2
+    dest: /home/{{ gblix_usr }}/devbertholdo/{{ gitdir }}.git/hooks/post-receive
+    owner: "{{ gblix_usr }}"
+    group: "{{ gblix_usr }}"
+  when: not stat_result.stat.exists
+
+- name: CHANGING GIT DIR PERMISSIONS
+  ansible.builtin.file:
+    path: /home/{{ gblix_usr }}/devbertholdo/{{ gitdir }}.git
+    owner: "{{ gblix_usr }}"
+    group: "{{ gblix_usr }}"
+    mode: '0755'
+    state: directory
+    recurse: yes
+    
+- name: REMOVING DUMP-FILE
+  ansible.builtin.file:
+    path: /home/{{ gblix_usr }}/public_html/{{ brt_project }}.sql
+    state: absent    
+    
+    #  ansible.builtin.shell:
+#    cmd: git commit -m "Adding .gitignore."
+#    chdir: /home/{{ gblix_usr }}/devbertholdo/{{ gitdir }}.local
+#
+#- name: PUSHING .GITIGNORE
+#  ansible.builtin.expect:
+#    command: git push origin master
+#    chdir: /home/{{ gblix_usr }}/devbertholdo/{{ gitdir }}.local
+#    responses:
+#      (?i)password: "{{ gblix_pwd }}"
+#  no_log: true
+#    
+#- name: MOVING .GIT TO PUBLIC_HTML
+#  ansible.builtin.shell:
+#   cmd: mv .git /home/{{ gblix_usr }}/public_html
+#   chdir: /home/{{ gblix_usr }}/devbertholdo/{{ gitdir }}.local
+#
+#- name: TRACKING FULL PROJECT
+#  ansible.builtin.shell:
+#    cmd: git add .
+#    chdir: /home/{{ gblix_usr }}/public_html
+#
+#- name: COMMITING FULL PROJECT
+#  ansible.builtin.shell:
+#    cmd: git commit -m "Initial commit."
+#    chdir: /home/{{ gblix_usr }}/public_html
+#
+#- name: PUSHING FULL PROJECT
+#  ansible.builtin.expect:
+#    command: git push origin master
+#    chdir: /home/{{ gblix_usr }}/public_html
+#    responses:

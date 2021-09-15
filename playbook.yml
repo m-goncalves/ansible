@@ -1,0 +1,24 @@
+- name: MIGRATION DEV II > GBLIX
+  hosts: ubuntu
+  vars:
+    brt_db_user: lojaizuscom_prod 
+    brt_db_password: mg357623 
+    brt_db: lojaizuscom_prod
+    brt_project: lojaizuz
+  tasks:
+    - include_role:
+        name: backup-dev
+  
+- name: DEPLOY GBLIX
+  hosts: gblix
+  vars:  
+    gblix_project: lojaizuz.com.br
+    gblix_user: brtboletocom
+    gblix_password: zNq=,H5sEdrN
+    gblix_db_usr: brtboletocom_prod
+    gblix_db_pwd: ndn?=I6YYaFv
+    gitdir: lojaizuz
+  tasks:
+    - include_role:
+        name: deploy-dev
+        

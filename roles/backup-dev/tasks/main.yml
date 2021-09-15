@@ -1,0 +1,45 @@
+---
+# MIGRATING DEVELOPMENT ENVIRONMENTS - BERTHOLDO DEV2
+- name: CHECKING IF DUMP EXISTS
+  stat:
+    path: /var/www/{{ brt_project }}/{{brt_project }}.sql
+  register: stat_result
+
+- name: GENERATING MYSQL-DUMP
+  ansible.builtin.shell:
+    cmd: mysqldump -u{{ brt_db_usr }} -p{{ brt_db_pwd }}  {{ brt_db }} > {{ brt_project }}.sql
+    chdir: /var/www/{{ brt_project }}
+  when: not stat_result.stat.exists
+
+- name: CHECKING IF TARBALL EXISTS
+  stat:
+    path: /var/www/{{ brt_project }}/{{brt_project }}.tar.gz
+  register: stat_result
+
+- name: COMPRESSING DIRECTORY
+  community.general.archive:
+    path: /var/www/{{ brt_project }}
+    dest: /var/www/{{ brt_project }}.tar.gz 
+  when: not stat_result.stat.exists
+
+- name: MOVING FILE
+  ansible.builtin.shell:
+    cmd: mv {{ brt_project }}.tar.gz {{ brt_project }}/
+    chdir: /var/www/
+  when: not stat_result.stat.exists
+#
+#- name: RETRIEVING COMPRESSED FILE
+#  ansible.builtin.fetch:
+#    src: /var/www/{{ brt_project }}.tar.gz
+#    dest: /root/roles/deploy-dev/files/
+#    flat: yes
+#
+#- name: REMOVING DUMP-FILE
+#  ansible.builtin.file:
+#    path: /var/www/{{ brt_project }}/{{ brt_project }}.sql
+#    state: absent
+#
+#- name: REMOVING TARBALL
+#  ansible.builtin.file:
+#   path: /var/www/{{ brt_project }}.tar.gz
+#   state: absent

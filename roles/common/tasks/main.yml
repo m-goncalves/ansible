@@ -1,0 +1,28 @@
+---
+# MIGRATING DEVELOPMENT ENVIRONMENTS - BERTHOLDO DEV2
+
+- name: GENERATING MYSQL-DUMP
+  ansible.builtin.shell:
+    cmd: mysqldump -umarcelo -pmg357623  amigos > dump.sql
+    chdir: /var/www/html/fresco.com.br
+
+- name: COMPRESSING DIRECTORY
+  community.general.archive:
+    path: /var/www/html/fresco.com.br
+    dest: /var/www/html/fresco.com.br.tar.gz
+
+- name: RETRIEVING COMPRESSED FILE
+  ansible.builtin.fetch:
+    src: /var/www/html/fresco.com.br.tar.gz
+    dest: /root/roles/common/files/
+    flat: yes
+
+- name: REMOVING DUMP-FILE
+  ansible.builtin.file:
+   path: /var/www/html/fresco.com.br/dump.sql
+   state: absent
+
+- name: REMOVING TARBALL
+  ansible.builtin.file:
+   path: /var/www/html/fresco.com.br.tar.gz
+   state: absent

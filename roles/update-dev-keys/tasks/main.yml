@@ -1,0 +1,60 @@
+#Updating public keys on brt servers
+
+- name: CHECKING IF KEYS FILE EXISTS
+  ansible.builtin.stat:
+    path: /home/{{ ansible_ssh_user }}/keys
+  register: stat_result
+    
+- name: COPYING KEYS FILE TO DEV SERVER
+  ansible.builtin.copy:
+    src: /root/roles/update-dev-keys/files/keys
+    dest: /home/{{ ansible_ssh_user }}
+  when: not stat_result.stat.exists
+
+- name: CHECKING IF AUTHORIZED_KEYS FILE EXISTS
+  ansible.builtin.stat:
+    path: /home/{{ ansible_ssh_user }}/.ssh/authorized_keys
+  register: stat_result
+
+- name: CREATING AUTHORIZED_KEYS FILE
+  ansible.builtin.file:
+    path: /home/{{ ansible_ssh_user }}/.ssh/authorized_keys
+    state: touch
+    mode: '600'
+  when: not stat_result.stat.exists
+
+- name: ADDING PUBLIC KEYS TO AUTHORIZED_KEYS FILE
+  ansible.builtin.shell:
+    cmd: cat /home/{{ ansible_ssh_user }}/keys > /home/{{ ansible_ssh_user }}/.ssh/authorized_keys
+    chdir: /home/{{ ansible_ssh_user }}
+
+- name: REMOVING KEYS FILE
+  ansible.builtin.file:
+    path: /home/{{ ansible_ssh_user }}/keys
+    state: absent
+
+- name: CHECKING IF PROD KEY EXISTS
+  ansible.builtin.stat:
+    path: /home/{{ ansible_ssh_user }}/.ssh/.prod
+  register: stat_result
+
+- name: ADDING PROD KEY TO AUTHORIZED_KEYS FILE
+  ansible.builtin.shell:
+    cmd: cat /home/{{ ansible_ssh_user }}/.ssh/.prod >> /home/{{ ansible_ssh_user }}/.ssh/authorized_keys
+    chdir: /home/{{ ansible_ssh_user }}
+  when: stat_result.stat.exists
+
+- name: CHECKING IF DEV PUBLIC KEY EXISTS
+  ansible.builtin.stat:
+    path: /home/{{ ansible_ssh_user }}/.ssh/id_rsa.pub
+  register: stat_result
+
+- name: GENERATING DEV PUBLIC KEY
+  community.crypto.openssh_keypair:
+    path: /home/{{ ansible_ssh_user }}/.ssh/id_rsa
+  when: not stat_result.stat.exists
+
+- name: ADDING DEV KEY TO AUTHORIZED_KEYS FILE
+  ansible.builtin.shell:
+    cmd: cat /home/{{ ansible_ssh_user }}/.ssh/id_rsa.pub >> /home/{{ ansible_ssh_user }}/.ssh/authorized_keys
+    chdir: /home/{{ ansible_ssh_user }}

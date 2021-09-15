@@ -1,0 +1,18 @@
+- name: UPDATING PUB KEYS ON DEV MACHINES
+  hosts: [gblixDevs] 
+  roles:
+    - update-dev-keys
+
+- name: UPDATING PUB KEYS ON DEV II MACHINES
+  hosts: [gblixDevsII] 
+  roles:
+    - update-dev-keys
+
+- name: UPDATING PUB KEYS ON AIC DEV MACHINES
+  hosts: [aicDevs]
+  roles:
+    - update-aic-dev-keys
+- name: UPDATING PUB KEYS ON MORADA MACHINES
+  hosts: [moradaDev] 
+  roles:
+    - update-dev-keys     
