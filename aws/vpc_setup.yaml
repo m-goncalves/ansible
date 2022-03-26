@@ -137,7 +137,7 @@
       register: private_route_table_out
 
     - debug:
-        var: "{item}"
+        var: "{{item}}"
       loop:
       - "{{vpcout.vpc.id}}"
       - "{{pubsub1out.subnet.id}}"
