@@ -30,10 +30,10 @@
         region: "{{region}}"
         vpc_id: "{{vpc_id}}"
         rules:
-          proto: tcp
-          from_port: 22
-          to_port: 22
-          cidr_ip: "{{MYIP}}"
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: "{{MYIP}}"
       register: bastion_sg_out
 
     - name: CREATE BASTION HOST INSTANCE
