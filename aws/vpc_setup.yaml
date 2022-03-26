@@ -111,3 +111,28 @@
           - dest: 0.0.0.0/0
             gateway_id: "{{igwout.gateway_id}}"
       register: rtout
+
+    - name: CREATE NAT GATEWAY AND ALLOCATE AN ELASTIC IP
+      ec2_vpc_nat_gateway:
+        state: "{{state}}"
+        subnet_id: "{{pubsub1out.subnet.id}}"
+        wait: yes
+        region: "{{region}}"
+        if_exist_do_not_create: true
+        vpc_id: "{{vpcout.vpc.id}}"     
+      register: natgatewayout
+    
+    - name: CREATE NAT GATEWAY ROUTE TABLE
+      ec2_vpc_route_table:
+        vpc_id: "{{vpcout.vpc.id}}"
+        region: "{{region}}"
+        tags:
+          Name: vprofile-route-table
+        subnets:
+          - "{{prisub1out.subnet.id}}"
+          - "{{prisub2out.subnet.id}}"
+          - "{{prisub3out.subnet.id}}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{natgatewayout.nat_gateway_id}}"
+      register: privatertout
