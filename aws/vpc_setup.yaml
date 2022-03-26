@@ -96,3 +96,18 @@
         resource_tags:
           Name: vprofile-igw
       register: igwout
+
+    - name: SET UP PUBLIC SUBNET ROUTE TABLE
+      ec2_vpc_route_table:
+        vpc_id: "{{vpcout.vpc.id}}"
+        region: "{{region}}"
+        tags:
+          Name: vprofile-route-table
+        subnets:
+        - "{{pubsub1out.subnet.id}}"
+        - "{{pubsub2out.subnet.id}}"
+        - "{{pubsub3out.subnet.id}}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{igwout.gateway.id}}"
+      register: rtout
