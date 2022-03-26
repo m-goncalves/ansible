@@ -167,5 +167,5 @@
     
     - name: CREATE ENV FILE
       copy:
-        content: "pvc_id: {{vpcout.vpc.id}}\npubsub1: {{pubsub1out.subnet.id}}\npubsub2: {{pubsub2out.subnet.id}}\npubsub3: {{pubsub3out.subnet.id}}\nprisub1: {{prisub1out.subnet.id}}\nprisub2: {{prisub2out.subnet.id}}\nprisub3: {{prisub3out.subnet.id}}\nnatgateway: {{natgatewayout.nat_gateway_id}}\nigateway: {{igwout.gateway_id}}\npub_rt: {{public_route_table_out.route_table.id}}\npri_rt: {{private_route_table_out.route_table.id}}"
+        content: "vpc_id: {{vpcout.vpc.id}}\npubsub1: {{pubsub1out.subnet.id}}\npubsub2: {{pubsub2out.subnet.id}}\npubsub3: {{pubsub3out.subnet.id}}\nprisub1: {{prisub1out.subnet.id}}\nprisub2: {{prisub2out.subnet.id}}\nprisub3: {{prisub3out.subnet.id}}\nnatgateway: {{natgatewayout.nat_gateway_id}}\nigateway: {{igwout.gateway_id}}\npub_rt: {{public_route_table_out.route_table.id}}\npri_rt: {{private_route_table_out.route_table.id}}"
         dest: vars/output_vars
