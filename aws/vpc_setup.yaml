@@ -163,7 +163,7 @@
         igateway: "{{igwout.gateway_id}}"
         pub_rt: "{{public_route_table_out.route_table.id}}"
         pri_rt: "{{private_route_table_out.route_table.id}}"
-        cacheable: yes
+        cacheable: no
     
     - name: CREATE ENV FILE
       copy:
