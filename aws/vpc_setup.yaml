@@ -73,7 +73,7 @@
         region: "{{region}}"
         az: "{{zone2}}"
         state: "{{state}}"
-        cidr: "{{PRISub2Cidr}}"
+        cidr: "{{PriSub2Cidr}}"
         map_public: yes
         resource_tags:
           Name: vprofile-prisub2
