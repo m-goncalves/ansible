@@ -119,7 +119,6 @@
         wait: yes
         region: "{{region}}"
         if_exist_do_not_create: true
-        vpc_id: "{{vpcout.vpc.id}}"     
       register: natgatewayout
     
     - name: CREATE NAT GATEWAY ROUTE TABLE
