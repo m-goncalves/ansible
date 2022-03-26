@@ -1,0 +1,34 @@
+- name: SETUP BASTION
+  hosts: localhost
+  connection: local
+  gather_facts: no 
+  tasks:
+  - name: IMPORT VPC-SETUP VARIABLES
+    include_vars: vars/bastion_setup
+
+  - name: IMPORT VPC-SETUP VARIABLES
+    include_vars: vars/output_vars
+
+  - name: CREATE EC2 KEY
+    ec2_key:
+      name: vprofile-key
+      region: "{{region}}"
+    register: key_out
+
+  - name: SAVE EC2 KEY INTO BASTION-KEY.PEM
+    copy:
+      content: "{{key_out.key.private_key}}"
+      dest: "./bastion-key.pem"
+      mode: 0600
+    when: key_out.changed
+    register: key_out
+
+  - name: CREATE SG FOR BASTION HOST
+    ec2_group:
+      name: bastion-host-sg
+      description: allows port 22 from everywhere and all port within the sg.
+      region: "{{region}}"
+      vpc_id: "{{}}"
+    when: key_out.changed
+    register: key_out
+

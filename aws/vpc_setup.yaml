@@ -152,7 +152,7 @@
       - private_route_table_out.route_table.id
 
     - set_fact:
-        pvc_id: "{{vpcout.vpc.id}}"
+        vpc_id: "{{vpcout.vpc.id}}"
         pubsub1: "{{pubsub1out.subnet.id}}"
         pubsub2: "{{pubsub2out.subnet.id}}"
         pubsub3: "{{pubsub3out.subnet.id}}"
@@ -169,4 +169,3 @@
       copy:
         content: "pvc_id: {{vpcout.vpc.id}}\n pubsub1: {{pubsub1out.subnet.id}}\n pubsub2: {{pubsub2out.subnet.id}}\n pubsub3: {{pubsub3out.subnet.id}}\n prisub1: {{prisub1out.subnet.id}}\n prisub2: {{prisub2out.subnet.id}}\n prisub3: {{prisub3out.subnet.id}}\n natgateway: {{natgatewayout.nat_gateway_id}}\n igateway: {{igwout.gateway_id}}\n pub_rt: {{public_route_table_out.route_table.id}}\n pri_rt: {{private_route_table_out.route_table.id}}"
         dest: vars/output_vars
-      
