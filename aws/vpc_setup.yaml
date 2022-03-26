@@ -97,7 +97,7 @@
           Name: vprofile-igw
       register: igwout
 
-    - name: SET UP PUBLIC SUBNET ROUTE TABLE
+    - name: SET UP PUBLIC SUBNET RT
       ec2_vpc_route_table:
         vpc_id: "{{vpcout.vpc.id}}"
         region: "{{region}}"
@@ -109,5 +109,5 @@
           - "{{pubsub3out.subnet.id}}"
         routes:
           - dest: 0.0.0.0/0
-            gateway_id: "{{igwout.gateway.id}}"
+            gateway_id: "{{igwout.gateway_id}}"
       register: rtout
