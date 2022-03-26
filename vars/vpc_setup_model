@@ -1,0 +1,26 @@
+vpc_name: vprofile-vpc 
+
+#vpc range:
+
+vpcCidr: 
+
+# subnets range:
+
+PubSub1Cidr: 
+PubSub2Cidr: 
+PubSub3Cidr: 
+PubSub4Cidr: 
+PubSub5Cidr: 
+PubSub6Cidr: 
+
+#region name 
+
+region: 
+
+#zone names
+
+zone1: 
+zone2: 
+zone3:
+
+state: present
