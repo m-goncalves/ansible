@@ -139,7 +139,7 @@
     - debug:
         var: "{{item}}"
       loop:
-      - vpcout.vpc.id
+      # - vpcout.vpc.id
       - pubsub1out.subnet.id
       - pubsub2out.subnet.id
       - pubsub3out.subnet.id
