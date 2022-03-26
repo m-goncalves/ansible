@@ -1,54 +1,54 @@
-- name: SETUP BASTION
+- name: SETUP BASTION HOST
   hosts: localhost
   connection: local
   gather_facts: no 
   tasks:
-  - name: IMPORT VPC-SETUP VARIABLES
-    include_vars: vars/bastion_setup
+    - name: IMPORT VPC-SETUP VARIABLES
+      include_vars: vars/bastion_setup
 
-  - name: IMPORT VPC-SETUP VARIABLES
-    include_vars: vars/output_vars
+    - name: IMPORT VPC-SETUP VARIABLES
+      include_vars: vars/output_vars
 
-  - name: CREATE EC2 KEY
-    ec2_key:
-      name: vprofile-key
-      region: "{{region}}"
-    register: key_out
+    - name: CREATE EC2 KEY
+      ec2_key:
+        name: vprofile-key
+        region: "{{region}}"
+      register: key_out
 
-  - name: SAVE EC2 KEY INTO BASTION-KEY.PEM
-    copy:
-      content: "{{key_out.key.private_key}}"
-      dest: "./bastion-key.pem"
-      mode: 0600
-    when: key_out.changed
-    register: key_out
+    - name: SAVE EC2 KEY INTO BASTION-KEY.PEM
+      copy:
+        content: "{{key_out.key.private_key}}"
+        dest: "./bastion-key.pem"
+        mode: 0600
+      when: key_out.changed
+      register: key_out
 
-  - name: CREATE SG FOR BASTION HOST
-    ec2_group:
-      name: bastion-host-sg
-      description: allows port 22 from everywhere and all port within the sg.
-      region: "{{region}}"
-      vpc_id: "{{vpc_id}}"
-      rules:
-        proto: tcp
-        from_port: 22
-        to_port: 22
-        cidr_ip: "{{MYIP}}"
-    register: bastion_sg_out
+    - name: CREATE SG FOR BASTION HOST
+      ec2_group:
+        name: bastion-host-sg
+        description: allows port 22 from everywhere and all port within the sg.
+        region: "{{region}}"
+        vpc_id: "{{vpc_id}}"
+        rules:
+          proto: tcp
+          from_port: 22
+          to_port: 22
+          cidr_ip: "{{MYIP}}"
+      register: bastion_sg_out
 
-  - name: CREATE BASTION HOST INSTANCE
-    ec2:
-      key_name: vprofile-key
-      region: "{{region}}"
-      instance_type: t2.micro
-      image: bastion_ami
-      wait: yes
-      wait_timeout: 300
-      instance_tags: 
-        Name: "bastion-host"
-      exact_count: 1
-      count_tag: 
-        Name: "bastion-host"
-      group_id: "{{bastion_sg_out.group_id}}"
-      vpc_subnet_id: "{{pubsub1}}"
-    register: bastion_host_out
+    - name: CREATE BASTION HOST INSTANCE
+      ec2:
+        key_name: vprofile-key
+        region: "{{region}}"
+        instance_type: t2.micro
+        image: bastion_ami
+        wait: yes
+        wait_timeout: 300
+        instance_tags: 
+          Name: "bastion-host"
+        exact_count: 1
+        count_tag: 
+          Name: "bastion-host"
+        group_id: "{{bastion_sg_out.group_id}}"
+        vpc_subnet_id: "{{pubsub1}}"
+      register: bastion_host_out
