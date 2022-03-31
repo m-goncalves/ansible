@@ -15,3 +15,8 @@ zone1:
 zone2: 
 zone3:
 state: present
+
+#bastion_vars
+
+bastion_ami: 
+MYIP: 
