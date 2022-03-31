@@ -1,5 +1,5 @@
 - name: Setup vprofile stack
-  host: localhost
+  hosts: localhost
   connection: local
   gather_facts: no
   tasks:
