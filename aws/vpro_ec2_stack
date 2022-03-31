@@ -1,0 +1,23 @@
+- name: Setup vprofile stack
+  host: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+  - name: Import VPC setup variables
+    include_vars: vars/vpc_output_vars
+
+  - name: Import vprofile setup variables
+    include_vars: vars/vpro_stack_setup
+
+  - name: Create vprofile key
+    ec2_key:
+      name: vpro-key
+      region: "{{region}}"
+    register: vpro_key_out
+  
+  - name: Save ssh key
+    copy:
+      content: "{{vpro_key_out.key.private_key}}"
+      dest: ./login-key.pem
+      mode: 600
+    when: vpro_key_out.changed
