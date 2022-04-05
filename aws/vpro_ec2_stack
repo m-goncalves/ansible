@@ -53,3 +53,14 @@
           to_port: 22
           group_id: "{{ BastionSGid }}"
     register: vprofile_stack_sg_out
+
+  - name: Update SG with its own SG id
+    ec2_group:
+      name: vprofile_sg
+      description: Allows port 80 from everywhere and all port within the SG
+      region: "{{ region }}"
+      vpc_id: "{{ vpcid }}"
+      purge_rules: no
+      rules:
+        - proto: all
+          group_id: "{{ vprofile_stack_sg_out.group_id }}"
