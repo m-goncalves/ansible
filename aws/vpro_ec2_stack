@@ -21,3 +21,35 @@
       dest: ./login-key.pem
       mode: 600
     when: vpro_key_out.changed
+
+  - name: Create SG for loadbalancer
+    ec2_group:
+      name: vpro_elb_sg
+      description: Allows port 80 from everywhere
+      region: "{{ region }}"
+      vpc_id: "{{ vpcid }}"
+      rules:
+        - proto: tcp
+          from_port: 80
+          to_port: 80
+          cidr_ip: 0.0.0.0/0
+    register: vpro_elb_sg_out
+
+  - name: Create SG for vprofile stack
+    ec2_group:
+      name: vprofile_stack_sg
+      description: Allows port 80 from everywhere and all port within the SG
+      region: "{{ region }}"
+      vpc_id: "{{ vpcid }}"
+      purge_rules: no
+      rules:
+        - proto: tcp
+          from_port: 80
+          to_port: 80
+          group_id: "{{ vpro_elb_sg_out.group_id }}"
+
+        - proto: tcp
+          from_port: 22
+          to_port: 22
+          group_id: "{{ BastionSGid }}"
+    register: vprofile_stack_sg_out
