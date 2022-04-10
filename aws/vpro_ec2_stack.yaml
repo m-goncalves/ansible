@@ -15,7 +15,7 @@
   - name: Create vprofile key
     ec2_key:
       name: vpro-key
-      region: "{{region}}"
+      region: "{{ region }}"
     register: vpro_key_out
   
   - name: Save ssh key
@@ -134,7 +134,7 @@
   - name: Creating rabbitmq instance
     ec2:
       key_name: vprofile-key
-      region: "{{region}}"
+      region: "{{ region }}"
       instance_type: t2.micro
       image: "{{ rmq_ami }}"
       wait: yes
@@ -155,7 +155,7 @@
   - name: Creating MySQL instance
     ec2:
       key_name: vprofile-key
-      region: "{{region}}"
+      region: "{{ region }}"
       instance_type: t2.micro
       image: "{{ mysql_ami }}"
       wait: yes
@@ -174,4 +174,22 @@
     register: db01_out
 
   - debug:
-      var: db01_out
+      var: db01_out.tagged_instances[0].id
+  
+  - local_action:
+        module: ec2_elb_lb
+        name: "vprofile-elb"
+        region: "{{ region }}"
+        state: present
+        instance_ids:
+          - "{{ web01_out.tagged_instances[0].id }}"
+        purge_instance_ids: true
+        security_group_ids: "{{ vpro_elb_sg_out.group_id }}"
+        subnets:
+          - "{{ pubsub1id }}"
+          - "{{ pubsub2id }}"
+          - "{{ pubsub3id }}"
+        listeners:
+          - protocol: http # options are http, https, ssl, tcp
+            load_balancer_port: 80
+            instance_port: 80
