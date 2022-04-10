@@ -58,6 +58,8 @@
     register: vprofile_stack_sg_out
     failed_when: vprofile_stack_sg_out is failed and 'already exists' not in vprofile_stack_sg_out.error.message
 
+  - debug:
+      var: vprofile_stack_sg_out
   - name: Update SG with its own SG id
     ec2_group:
       name: vprofile_sg
