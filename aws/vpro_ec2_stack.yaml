@@ -56,10 +56,7 @@
           to_port: 22
           group_id: "{{ BastionSGid }}"
     register: vprofile_stack_sg_out
-    failed_when: vprofile_stack_sg_out is failed and 'already exists' not in vprofile_stack_sg_out.error.message
 
-  - debug:
-      var: vprofile_stack_sg_out
   - name: Update SG with its own SG id
     ec2_group:
       name: vprofile_sg
@@ -204,7 +201,7 @@
         web01_ip: {{ web01_out.tagged_instances[0].private_ip }}
         app01_ip: {{ app01_out.tagged_instances[0].private_ip }}
         rmq01_ip: {{ rmq01_out.tagged_instances[0].private_ip }}
-        mc01_ip: {{ mc01_out.tagged_instances[0].private_ip }}
+        mem01_ip: {{ mc01_out.tagged_instances[0].private_ip }}
         db01_ip: {{ db01_out.tagged_instances[0].private_ip }}
   
   - name: Copy login key to provision_stack directory
