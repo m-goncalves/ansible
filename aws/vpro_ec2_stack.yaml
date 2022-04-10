@@ -55,8 +55,8 @@
           from_port: 22
           to_port: 22
           group_id: "{{ BastionSGid }}"
-    register: vprofile_stack_sg_out sg_create
-    failed_when: sg_create is failed and 'already exists' not in sg_create.error.message
+    register: vprofile_stack_sg_out
+    failed_when: vprofile_stack_sg_out is failed and 'already exists' not in vprofile_stack_sg_out.error.message
 
   - name: Update SG with its own SG id
     ec2_group:
