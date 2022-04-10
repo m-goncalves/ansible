@@ -44,7 +44,7 @@
       description: Allows port 80 from everywhere and all port within the SG
       region: "{{ region }}"
       vpc_id: "{{ vpcid }}"
-      purge_rules: no
+      purge_rules: yes
       rules:
         - proto: tcp
           from_port: 80
