@@ -31,7 +31,6 @@
       description: Allows port 80 from everywhere
       region: "{{ region }}"
       vpc_id: "{{ vpcid }}"
-      purge_rules: no
       rules:
         - proto: tcp
           from_port: 80
@@ -56,7 +55,8 @@
           from_port: 22
           to_port: 22
           group_id: "{{ BastionSGid }}"
-    register: vprofile_stack_sg_out
+    register: vprofile_stack_sg_out sg_create
+    failed_when: sg_create is failed and 'already exists' not in sg_create.error.message
 
   - name: Update SG with its own SG id
     ec2_group:
