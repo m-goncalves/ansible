@@ -212,7 +212,7 @@
   
   - name: Insert/Update Inventory file provision-stack/inventory-vpro
     blockinfile:
-      path: provision_stack/inventory-vpro
+      path: provision_stack/inventory_vpro
       block: |
         web01 ansible_host={{ web01_out.tagged_instances[0].private_ip }}
         app01 ansible_host={{ app01_out.tagged_instances[0].private_ip }}
