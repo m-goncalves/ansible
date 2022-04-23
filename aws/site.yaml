@@ -1,2 +1,2 @@
-- import_playbook: vpc_setup.yaml
-- import_playbook: bastion_setup.yaml
+- ansible.builtin.import_playbook: vpc_setup.yaml
+- ansible.builtin.import_playbook: bastion_setup.yaml
