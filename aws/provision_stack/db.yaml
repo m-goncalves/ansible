@@ -58,6 +58,7 @@
 
   handlers:
     - name: Restart mysql
-      service:
-        name: mysql
+      systemd:
         state: restarted
+        daemon_reload: yes
+        name: mysql
