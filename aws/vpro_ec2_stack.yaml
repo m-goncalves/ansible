@@ -206,8 +206,8 @@
   
   - name: Copy login key to provision_stack directory
     copy:
-      src: login-key.pem
-      dest: provision_stack/login-key.pem
+      src: bastion-key.pem
+      dest: provision_stack/bastion-key.pem
       mode: '0400'
   
   - name: Insert/Update Inventory file provision-stack/inventory-vpro
