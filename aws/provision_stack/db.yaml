@@ -4,6 +4,9 @@
   gather_facts: no
   become: yes
   tasks:
+    - name: Import MySQL variables
+      include_vars: group_vars/dbsrvgroup
+
     - name: Installing Mysql Service and dependencies
       package:
         name: "{{item}}"
